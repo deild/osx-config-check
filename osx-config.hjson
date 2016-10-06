@@ -156,7 +156,14 @@
                 command_pass: "1"
                 command_fail: "0"
                 case_sensitive: "false"
-            },
+            }
+            {
+                //If the previous test did not result in a pass, then the next one will also not pass if the user is not a sudoer.
+                type: exact match
+                command: is_sudoer
+                command_fail: 0
+                case_sensitive: false
+            }
             {
                 type: "exact match"
                 command: "sudo defaults read /Library/Preferences/com.apple.screensaver askForPassword"
@@ -202,7 +209,14 @@
                 command_pass: "0"
                 command_fail: "1"
                 case_sensitive: "false"
-            },
+            }
+            {
+                //If the previous test did not result in a pass, then the next one will also not pass if the user is not a sudoer.
+                type: exact match
+                command: is_sudoer
+                command_fail: 0
+                case_sensitive: false
+            }
             {
                 type: "exact match"
                 command: "sudo defaults -currentHost read /Library/Preferences/com.apple.screensaver askForPasswordDelay"
@@ -289,6 +303,13 @@
         tests:
         [
             {
+                //The next test will not pass if the user is not a sudoer.
+                type: exact match
+                command: is_sudoer
+                command_fail: 0
+                case_sensitive: false
+            }
+            {
                 type: "exact match"
                 command: "sudo softwareupdate --schedule | grep -i 'Automatic check is on'"
                 command_pass: "Automatic check is on"
@@ -333,7 +354,14 @@
                 command_pass: "0"
                 command_fail: "1"
                 case_sensitive: "false"
-            },
+            }
+            {
+                //If the previous test did not result in a pass, then the next one will also not pass if the user is not a sudoer.
+                type: exact match
+                command: is_sudoer
+                command_fail: 0
+                case_sensitive: false
+            }
             {
                 type: "exact match"
                 command: "sudo defaults read /Library/Preferences/com.apple.Bluetooth ControllerPowerState"
@@ -360,7 +388,14 @@
                 command_pass: "0"
                 command_fail: "1"
                 case_sensitive: "false"
-            },
+            }
+            {
+                //If the previous test did not result in a pass, then the next one will also not pass if the user is not a sudoer.
+                type: exact match
+                command: is_sudoer
+                command_fail: 0
+                case_sensitive: false
+            }
             {
                 type: "exact match"
                 command: "sudo defaults read /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled"
@@ -387,7 +422,14 @@
                 command_pass: "1"
                 command_fail: "0"
                 case_sensitive: "false"
-            },
+            }
+            {
+                //If the previous test did not result in a pass, then the next one will also not pass if the user is not a sudoer.
+                type: exact match
+                command: is_sudoer
+                command_fail: 0
+                case_sensitive: false
+            }
             {
                 type: "exact match"
                 command: "sudo defaults read com.apple.NetworkBrowser DisableAirDrop"
@@ -457,7 +499,14 @@
                 command: "systemsetup -getremotelogin"
                 command_pass: "Remote Login: Off"
                 case_sensitive: "false"
-            },
+            }
+            {
+                //If the previous test did not result in a pass, then the next one will also not pass if the user is not a sudoer.
+                type: exact match
+                command: is_sudoer
+                command_fail: 0
+                case_sensitive: false
+            }
             {
                 type: "exact match"
                 command: "sudo systemsetup -getremotelogin"
@@ -506,7 +555,14 @@
                 command: "systemsetup -getremoteappleevents"
                 command_pass: "Remote Apple Events: Off"
                 case_sensitive: "false"
-            },
+            }
+            {
+                //If the previous test did not result in a pass, then the next one will also not pass if the user is not a sudoer.
+                type: exact match
+                command: is_sudoer
+                command_fail: 0
+                case_sensitive: false
+            }
             {
                 type: "exact match"
                 command: "sudo systemsetup -getremoteappleevents"
@@ -554,7 +610,14 @@
                 command: "systemsetup getwakeonnetworkaccess"
                 command_pass: "Wake On Network Access: Off"
                 case_sensitive: "false"
-            },
+            }
+            {
+                //If the previous test did not result in a pass, then the next one will also not pass if the user is not a sudoer.
+                type: exact match
+                command: is_sudoer
+                command_fail: 0
+                case_sensitive: false
+            }
             {
                 type: "exact match"
                 command: "sudo systemsetup getwakeonnetworkaccess"
@@ -568,6 +631,63 @@
             sudo_command: "sudo systemsetup -setwakeonnetworkaccess off"
         }
         undo: "sudo systemsetup -setwakeonnetworkaccess on"
+    },
+    {
+        //Disables NTPd. There are definitely some downsides to this; some security software requires synchronized clocks, so this increases the risk of getting out of sync. I think most of this software will fail-safe, though. Disabling this has various benefits. See discussion here: https://github.com/SummitRoute/osxlockdown/issues/18
+        description: "Automatic setting of time and date is disabled."
+        confidence: "recommended"
+        tests:
+        [
+            {
+                type: "exact match"
+                command: "systemsetup getusingnetworktime"
+                command_pass: "Network Time: Off"
+                command_fail: "Network Time: On"
+                case_sensitive: "false"
+            }
+            {
+                //If the previous test did not result in a pass, then the next one will also not pass if the user is not a sudoer.
+                type: exact match
+                command: is_sudoer
+                command_fail: 0
+                case_sensitive: false
+            }
+            {
+                type: "exact match"
+                command: "sudo systemsetup getusingnetworktime"
+                command_pass: "Network Time: Off"
+                command_fail: "Network Time: On"
+                case_sensitive: "false"
+            }
+        ]
+        fix:
+        {
+            command: "systemsetup setusingnetworktime off"
+            sudo_command: "sudo systemsetup setusingnetworktime off"
+        }
+        undo: "sudo systemsetup setusingnetworktime on"
+    },
+    {
+        //There are a number of attacks based on IPv6 use. For the sake of simplicity, it's best to disable it entirely unless it is required. See: https://www.ernw.de/download/ERNW_Hardening_IPv6_MacOS-X_v1_0.pdf
+        description: "IPv6 is disabled on all network interfaces."
+        confidence: "recommended"
+        reference: "https://github.com/SummitRoute/osxlockdown/blob/58697f5162fe9e43df7dc9b6b94ffa34b0e11d4f/commands.yaml"
+        tests:
+        [
+            {
+                type: "exact match"
+                command:
+                    networksetup -listallnetworkservices | while read i; do SUPPORT=$(networksetup -getinfo "$i" | grep "IPv6: Automatic") && if [ -n "$SUPPORT" ]; then echo 1; fi; done; echo 0; exit
+                command_pass: "0"
+                //command_fail would be one or more instances of the character "1"
+                case_sensitive: "false"
+            }
+        ]
+        fix:
+        {
+            command:
+                networksetup -listallnetworkservices | while read i; do SUPPORT=$(networksetup -getinfo "$i" | grep "IPv6: Automatic") && if [ -n "$SUPPORT" ]; then networksetup -setv6off "$i"; fi; done;
+        }
     },
     {
         description: "An administrator password is required to change system-wide preferences."
@@ -641,7 +761,14 @@
                 command: "launchctl list"
                 command_pass: "^((?!com\\.apple\\.apsd).)*$"
                 case_sensitive: "false"
-            },
+            }
+            {
+                //If the previous test did not result in a pass, then the next one will also not pass if the user is not a sudoer.
+                type: exact match
+                command: is_sudoer
+                command_fail: 0
+                case_sensitive: false
+            }
             {
                 type: "regex match"
                 command: "sudo launchctl list"
