@@ -275,6 +275,160 @@
         }
     },
     {
+        //System Preferences->Security & Privacy->Firewall->Firewall Options...->Enable Stealth Mode
+        //Note: This seems to get overwritten logging out/in. See following, user-specific version.
+        description: "Stealth mode is enabled for OSX: Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (system-wide)"
+        confidence: "recommended"
+        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
+        tests:
+        [
+            {
+                type: "exact match"
+                command: "defaults -currentHost read /Library/Preferences/com.apple.alf stealthenabled"
+                command_pass: "1"
+                command_fail: "0"
+                case_sensitive: "false"
+            }
+        ]
+        fix:
+        {
+            command: "defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true"
+            sudo_command: "sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true"
+        }
+        undo: "sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool false"
+    },
+    {
+        //System Preferences->Security & Privacy->Firewall->Firewall Options...->Enable Stealth Mode
+        description: "Stealth mode is enabled for OSX: Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (current user only)"
+        confidence: "recommended"
+        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
+        tests:
+        [
+            {
+                type: "exact match"
+                command: "defaults -currentHost read ~/Library/Preferences/com.apple.alf stealthenabled"
+                command_pass: "1"
+                command_fail: "0"
+                case_sensitive: "false"
+            }
+        ]
+        fix:
+        {
+            command: "defaults write ~/Library/Preferences/com.apple.alf stealthenabled -bool true"
+            sudo_command: "sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true"
+        }
+        undo: "defaults write ~/Library/Preferences/com.apple.alf stealthenabled -bool false"
+    },
+    {
+        //System Preferences->Security & Privacy->Firewall->Firewall Options...->Automatically allow signed software to receive incoming connections
+        description: "Automatic whitelisting of Apple-signed applications through the firewall is disabled (system-wide)."
+        confidence: "required"
+        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
+        tests:
+        [
+            {
+                type: "exact match"
+                command: "defaults -currentHost read /Library/Preferences/com.apple.alf allowsignedenabled"
+                command_pass: "0"
+                command_fail: "1"
+                case_sensitive: "false"
+            }
+        ]
+        fix:
+        {
+            command: "defaults -currentHost write /Library/Preferences/com.apple.alf allowsignedenabled -bool false"
+            sudo_command: "sudo defaults -currentHost write /Library/Preferences/com.apple.alf allowsignedenabled -bool false"
+        }
+        undo: "sudo defaults -currentHost write /Library/Preferences/com.apple.alf allowsignedenabled -bool true"
+    },
+    {
+        //System Preferences->Security & Privacy->Firewall->Firewall Options...->Automatically allow signed software to receive incoming connections
+        description: "Automatic whitelisting of Apple-signed applications through the firewall is disabled (current user only)."
+        confidence: "required"
+        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
+        tests:
+        [
+            {
+                type: "exact match"
+                command: "defaults -currentHost read ~/Library/Preferences/com.apple.alf allowsignedenabled"
+                command_pass: "0"
+                command_fail: "1"
+                case_sensitive: "false"
+            }
+        ]
+        fix:
+        {
+            command: "defaults -currentHost write ~/Library/Preferences/com.apple.alf allowsignedenabled -bool false"
+        }
+        undo: "sudo defaults -currentHost write /Library/Preferences/com.apple.alf allowsignedenabled -bool true"
+    },
+    {
+        description: "Captive portal for connecting to new networks is disabled to prevent MITM attacks."
+        confidence: "required"
+        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
+        tests:
+        [
+            {
+                type: "exact match"
+                command: "defaults -currentHost read /Library/Preferences/SystemConfiguration/com.apple.captive.control Active"
+                command_pass: "0"
+                command_fail: "1"
+                case_sensitive: "false"
+            }
+        ]
+        fix:
+        {
+            command: "defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool false"
+            sudo_command: "sudo defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool false"
+        }
+        undo: "sudo defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool true"
+    },
+    {
+        description: "OpenSSL is up to date."
+        confidence: "required"
+        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
+        tests:
+        [
+            {
+                type: "exact match"
+                command: "openssl version"
+                command_pass: "OpenSSL 1.0.2o  27 Mar 2018"
+                case_sensitive: "false"
+            }
+        ]
+        fix:
+        {
+            command: "brew update ; brew install openssl ; brew upgrade openssl ; bash ./scripts/set_openssl_latest_path.sh"
+            manual:
+                '''
+                1. Bring the Terminal application to the foreground if it is not already. You should see the word "Terminal" in the top left corner of your screen.
+                2. Select Terminal->Quit
+                3. Re-open the Terminal application and run the tool again; this check should now pass.
+                '''
+        }
+    },
+    {
+        description: "Hidden files are displayed in Finder."
+        confidence: "recommended"
+        reference: "http://lifehacker.com/the-best-hidden-settings-you-can-unlock-with-os-xs-ter-1476627111"
+        tests:
+        [
+            {
+                type: "exact match"
+                command: "defaults -currentHost read /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles"
+                command_pass: "1"
+                command_fail: "0"
+                case_sensitive: "false"
+            }
+        ]
+        fix:
+        {
+            command: "defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles -bool true && killall Dock"
+            sudo_command: "sudo defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles -bool true && killall Dock"
+        }
+        undo: "defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles -bool false && killall Dock"
+    },
+    {
         description: "All application software is currently up to date."
         confidence: "required"
         reference: "https://github.com/SummitRoute/osxlockdown/"
