@@ -33,67 +33,6 @@
     * back-slashes '\' must be escaped with a double black-slash, i.e. '\\'
 */
 [
-    /* --- BEGIN HOMEBREW SETTINGS --- */
-    {
-        //Install Homebrew as a useful tool for semi-securely install or updating other tools
-        description: "Homebrew is installed."
-        confidence: "required"
-        tests:
-        [
-            {
-                type: "exact match"
-                command:
-                    echo $(homebrew_is_installed)
-                command_pass: "1"
-                command_fail: "0"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            //This homebrew script requries sudo privs and so the user of this tool should be alerted as to why she is being prompted for a password
-            sudo_command: "/usr/bin/ruby ./scripts/homebrew_install_ed33f044812cc9c509a4d8e6997c44441b06dd4e1fc87f131ee9f319d77fcd50.rb"
-            manual:
-                '''
-                Homebrew is a useful tool for installing and updating programs from the command line.
-                There are various things that can go wrong when attempting to install Homebrew.
-                Please review their installation guide here:
-                https://github.com/Homebrew/brew/blob/master/share/doc/homebrew/Installation.md
-                '''
-        }
-    }
-    {
-        //Tools installed by Homebrew should be preferred according to the PATH
-        //environment variable.
-        "description": "Binaries installed to /usr/local/bin are preferred over those in /usr/bin (Note: If this check does not pass, other tests will fail)"
-        confidence: "required"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "bash ./scripts/check_usr_local_bin_pos.sh"
-                command_pass: 1
-                command_fail: 0
-                case_sensitive: false
-            }
-        ]
-        fix:
-        {
-            //Only "fix" this PATH preference if we haven't already applied the
-            //fix to the ~/.profile file. Otherwise, the user will need to
-            //restart Terminal in order for this take effect.
-            command:
-                python ./scripts/set_path_precedence.py "/usr/local/bin" "/usr/bin"
-            manual:
-                '''
-                1. Bring the Terminal application to the foreground if it is not already. You should see the word "Terminal" in the top left corner of your screen.
-                2. Select Terminal->Quit
-                3. Re-open the Terminal application and run the tool again; this check should now pass.
-                '''
-        }
-    }
-    /* ---- END HOMEBREW SETTINGS ---- */
-
     {
         //JRE is a scourge
         description: "Java Runtime Environment is up to date."
@@ -146,31 +85,6 @@
         {
             command:
                 killall "System Preferences" ; sleep 1
-        }
-    },
-    {
-        description: "Current user is a non-admin account."
-        confidence: "required"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "id -Gn | grep -c -w admin"
-                command_pass: "0"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            manual:
-                '''
-                1. For most of your work, you should be logged into a non-administrator account. If you've already set this up and you're just logged into your admin account in order to run this tool as prescribed, you can ignore this failed test.
-                2. To create a new, non-admin user for most of your work: Open System Preferences.
-                3. Select "Users & Groups".
-                4. If necessary, click the lock icon in the lower left corner and provide your administrator credentials.
-                5. Click the "+" to create a new user. Make sure the "Allow user to administer this computer" checkbox is un-checked for that user.
-                6. You may also want to add your non-administrator user to a list of users who can use the "sudo" command within the Terminal application to briefly gain administrator-like credentials for special circumstances. See: http://osxdaily.com/2014/02/06/add-user-sudoers-file-mac/
-                '''
         }
     },
     {
@@ -347,32 +261,6 @@
         }
     },
     {
-        description: "Homebrew analytics are disabled."
-        confidence: "required"
-        reference: "https://github.com/Homebrew/brew/blob/master/share/doc/homebrew/Analytics.md"
-        tests:
-        [
-            {
-                type: "exact match"
-                //test based on: https://github.com/Homebrew/brew/blob/master/Library/Homebrew/utils/analytics.sh
-                command: "[[ -n $HOMEBREW_NO_ANALYTICS ]] && echo 1 || echo 0"
-                command_pass: "1"
-                command_fail: "0"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "grep -q 'export HOMEBREW_NO_ANALYTICS=1' ~/.profile || echo 'export HOMEBREW_NO_ANALYTICS=1' >> ~/.profile ; source ~/.profile"
-            manual:
-                '''
-                1. Bring the Terminal application to the foreground if it is not already. You should see the word "Terminal" in the top left corner of your screen.
-                2. Select Terminal->Quit
-                3. Re-open the Terminal application and run the tool again; this check should now pass.
-                '''
-        }
-    },
-    {
         //System Preferences->Security & Privacy->Firewall->Firewall Options...->Enable Stealth Mode
         //Note: This seems to get overwritten logging out/in. See following, user-specific version.
         description: "Stealth mode is enabled for OSX: Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (system-wide)"
@@ -416,94 +304,6 @@
             sudo_command: "sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true"
         }
         undo: "defaults write ~/Library/Preferences/com.apple.alf stealthenabled -bool false"
-    },
-    {
-        //System Preferences->Security & Privacy->Firewall->Firewall Options...->Automatically allow signed software to receive incoming connections
-        description: "Automatic whitelisting of Apple-signed applications through the firewall is disabled (system-wide)."
-        confidence: "required"
-        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read /Library/Preferences/com.apple.alf allowsignedenabled"
-                command_pass: "0"
-                command_fail: "1"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults -currentHost write /Library/Preferences/com.apple.alf allowsignedenabled -bool false"
-            sudo_command: "sudo defaults -currentHost write /Library/Preferences/com.apple.alf allowsignedenabled -bool false"
-        }
-        undo: "sudo defaults -currentHost write /Library/Preferences/com.apple.alf allowsignedenabled -bool true"
-    },
-    {
-        //System Preferences->Security & Privacy->Firewall->Firewall Options...->Automatically allow signed software to receive incoming connections
-        description: "Automatic whitelisting of Apple-signed applications through the firewall is disabled (current user only)."
-        confidence: "required"
-        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read ~/Library/Preferences/com.apple.alf allowsignedenabled"
-                command_pass: "0"
-                command_fail: "1"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults -currentHost write ~/Library/Preferences/com.apple.alf allowsignedenabled -bool false"
-        }
-        undo: "sudo defaults -currentHost write /Library/Preferences/com.apple.alf allowsignedenabled -bool true"
-    },
-    {
-        description: "Captive portal for connecting to new networks is disabled to prevent MITM attacks."
-        confidence: "required"
-        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read /Library/Preferences/SystemConfiguration/com.apple.captive.control Active"
-                command_pass: "0"
-                command_fail: "1"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool false"
-            sudo_command: "sudo defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool false"
-        }
-        undo: "sudo defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool true"
-    },
-    {
-        description: "OpenSSL is up to date."
-        confidence: "required"
-        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "openssl version"
-                command_pass: "OpenSSL 1.0.2h  3 May 2016"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "brew update ; brew install openssl ; brew upgrade openssl ; bash ./scripts/set_openssl_latest_path.sh"
-            manual:
-                '''
-                1. Bring the Terminal application to the foreground if it is not already. You should see the word "Terminal" in the top left corner of your screen.
-                2. Select Terminal->Quit
-                3. Re-open the Terminal application and run the tool again; this check should now pass.
-                '''
-        }
     },
     {
         description: "Hidden files are displayed in Finder."
@@ -836,34 +636,6 @@
         undo: "sudo systemsetup -setwakeonnetworkaccess on"
     },
     {
-        //Disables NTPd. There are definitely some downsides to this; some security software requires synchronized clocks, so this increases the risk of getting out of sync. I think most of this software will fail-safe, though. Disabling this has various benefits. See discussion here: https://github.com/SummitRoute/osxlockdown/issues/18
-        description: "Automatic setting of time and date is disabled."
-        confidence: "recommended"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "systemsetup getusingnetworktime"
-                command_pass: "Network Time: Off"
-                command_fail: "Network Time: On"
-                case_sensitive: "false"
-            },
-            {
-                type: "exact match"
-                command: "sudo systemsetup getusingnetworktime"
-                command_pass: "Network Time: Off"
-                command_fail: "Network Time: On"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "systemsetup setusingnetworktime off"
-            sudo_command: "sudo systemsetup setusingnetworktime off"
-        }
-        undo: "sudo systemsetup setusingnetworktime on"
-    },
-    {
         //There are a number of attacks based on IPv6 use. For the sake of simplicity, it's best to disable it entirely unless it is required. See: https://www.ernw.de/download/ERNW_Hardening_IPv6_MacOS-X_v1_0.pdf
         description: "IPv6 is disabled on all network interfaces."
         confidence: "recommended"
@@ -928,28 +700,6 @@
         undo: "defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool true"
     },
     {
-        description: "The File Vault key is protected when going to standby mode."
-        //Once this set of configurations is proven stable, this can be upgraded from "experimental" to "recommended". We may want to warn the user first that waking will be slower and require authenticating twice.
-        confidence: "experimental"
-        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "bash ./scripts/DestroyFVKeyOnStandby_check.sh"
-                command_pass: "1"
-                command_fail: "0"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            //Additional configurations are required to make this setting not fight with powernap/standby/autopoweroff. See: https://github.com/drduh/OS-X-Security-and-Privacy-Guide/issues/124
-            command: "pmset -a destroyfvkeyonstandby 1 ; pmset -a hibernatemode 25 ; pmset -a powernap 0 ; pmset -a standby 0 ; pmset -a standbydelay 0; pmset -a autopoweroff 0"
-            sudo_command: "sudo pmset -a destroyfvkeyonstandby 1 ; sudo pmset -a hibernatemode 25 ; sudo pmset -a powernap 0 ; sudo pmset -a standby 0 ; sudo pmset -a standbydelay 0; sudo pmset -a autopoweroff 0"
-        }
-    },
-    {
         description: "The system will store a copy of memory to persistent storage, and will remove power to memory."
         confidence: "recommended"
         reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
@@ -966,33 +716,6 @@
         {
             command: "pmset -a hibernatemode 25"
             sudo_command: "sudo pmset -a hibernatemode 25"
-        }
-    },
-    {
-        description: "git is up to date or is not installed"
-        confidence: "required"
-        tests:
-        [
-            {
-                type: "regex match"
-                command: "git --version"
-                command_pass: ".*(command not found|2\\.9\\.3).*"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            //Only "fix" this PATH preference if we haven't already applied the
-            //fix to the ~/.profile file. Otherwise, the user will need to
-            //restart Terminal in order for this take effect.
-            command:
-                brew update ; brew install git ; brew upgrade git ; python ./scripts/set_path_precedence.py "/usr/local/bin" "/usr/bin"
-            manual:
-                '''
-                1. Bring the Terminal application to the foreground if it is not already. You should see the word "Terminal" in the top left corner of your screen.
-                2. Select Terminal->Quit
-                3. Re-open the Terminal application and run the tool again; this check should now pass.
-                '''
         }
     },
     {
@@ -1020,42 +743,6 @@
             sudo_command: "sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.apsd.plist"
         }
         undo: "sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.apsd.plist"
-    },
-    {
-        description: "Google DNS servers are used by default on all network interfaces."
-        confidence: "recommended"
-        tests:
-        [
-            {
-                type: "regex match"
-                command: "networksetup listallnetworkservices | grep -v 'An asterisk' | xargs -I{} networksetup -getdnsservers '{}' "
-                command_pass: "^(8\\.8\\.8\\.8\\n8\\.8\\.4\\.4\n*)+$"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            sudo_command: sudo bash ./scripts/use_google_dns.sh
-        }
-    },
-    {
-        description: "The curl utility is up to date or absent from the system."
-        confidence: "required"
-        tests:
-        [
-            {
-                type: "regex match"
-                command: "curl --version"
-                command_pass: ".*(command not found|7\\.50\\.1).*"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command:
-                brew update ; brew install curl ; brew upgrade curl ; python ./scripts/set_path_precedence.py "/usr/local/bin" "/usr/bin"
-        }
-        undo: "brew unlink curl"
     },
     {
         description: "FileVault file system encryption is enabled."
@@ -1203,44 +890,6 @@
         }
     },
     {
-        //Safari->Preferences->AutoFill->Using info from my Contacts card
-        description: "Safari will not auto-fill your contact data."
-        confidence: "recommended"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read ~/Library/Preferences/com.apple.Safari AutoFillFromAddressBook"
-                command_pass: "0"
-                command_fail: "1"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults -currentHost write ~/Library/Preferences/com.apple.Safari AutoFillFromAddressBook -bool false"
-        }
-    },
-    {
-        //Safari->Preferences->AutoFill->Other forms
-        description: "Safari will not auto-fill miscellaneous forms."
-        confidence: "recommended"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read ~/Library/Preferences/com.apple.Safari AutoFillMiscellaneousForms"
-                command_pass: "0"
-                command_fail: "1"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults -currentHost write ~/Library/Preferences/com.apple.Safari AutoFillMiscellaneousForms -bool false"
-        }
-    },
-    {
         //Safari->Preferences->AutoFill->User names and passwords
         description: "Safari will not auto-fill usernames or passwords."
         confidence: "recommended"
@@ -1279,45 +928,6 @@
         }
     },
     {
-        //Safari->Preferences->Privacy->Cookies and website data->Always block
-        description: "Cookies and local storage are always blocked in Safari."
-        confidence: "recommended"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read ~/Library/Preferences/com.apple.Safari BlockStoragePolicy"
-                command_pass: "0"
-                command_fail: "1"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults -currentHost write ~/Library/Preferences/com.apple.Safari BlockStoragePolicy -bool false"
-        }
-    },
-    {
-        //Safari->Develop->Disable Extensions
-        //Note: Extensions are often a persistence mechanism for browser-based malware.
-        description: "Safari extensions are disabled."
-        confidence: "required"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read ~/Library/Preferences/com.apple.Safari ExtensionsEnabled"
-                command_pass: "0"
-                command_fail: "1"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults -currentHost write ~/Library/Preferences/com.apple.Safari ExtensionsEnabled -bool false"
-        }
-    },
-    {
         //Safari->Preferences->Security->Fraudulent sites->Warn when visiting a fraudulent website
         description: "The Safari web browser will warn when visiting known fraudulent websites."
         //I'm setting this to recommended for on the basis that there is like a privacy trade-off
@@ -1337,45 +947,6 @@
             command: "defaults -currentHost write ~/Library/Preferences/com.apple.Safari WarnAboutFraudulentWebsites -bool true"
         }
         undo: "defaults -currentHost write ~/Library/Preferences/com.apple.Safari WarnAboutFraudulentWebsites -bool false"
-    },
-    {
-        //Safari->Preferences->Security->Web Content->Enable JavaScript
-        description: "JavaScript is disabled in the Safari web browser."
-        confidence: "recommended"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read ~/Library/Preferences/com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptEnabled"
-                command_pass: "0"
-                command_fail: "1"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults -currentHost write ~/Library/Preferences/com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptEnabled -bool false"
-        }
-        undo: "defaults -currentHost write ~/Library/Preferences/com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptEnabled -bool true"
-    },
-    {
-        description: "JavaScript is disabled in the Safari web browser (Legacy version)."
-        confidence: "recommended"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read ~/Library/Preferences/com.apple.Safari WebKitJavaScriptEnabled"
-                command_pass: "0"
-                command_fail: "1"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults -currentHost write ~/Library/Preferences/com.apple.Safari WebKitJavaScriptEnabled -bool false"
-        }
-        undo: "defaults -currentHost write ~/Library/Preferences/com.apple.Safari WebKitJavaScriptEnabled -bool true"
     },
     {
         //Safari->Preferences->Security->Web Content->Block pop-up windows
@@ -2518,99 +2089,6 @@
             //To simplify syntax, most of this logic has been stored in the "chrome_widevine.sh" script
             command:
                 find ~/Library/Application\ Support/Google/Chrome -name "Preferences" -maxdepth 2 | xargs -I{} bash ./scripts/chrome_widevine.sh '{}'
-        }
-    },
-    {
-        //chrome://extensions/->uBlock Origin
-        description: "All Google Chrome web browser profiles have enabled the uBlock Origin extension."
-        confidence: "recommended"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: chrome_is_installed
-                command_pass: 0
-                case_sensitive: false
-            },
-            {
-                type: "exact match"
-                //This style of bash command basically prints "False" and exits any time it detects a problem in any Chrome profile, since we're looking for 100% compliance. We'll create an exception for the default System and Guest profiles, since these are not configurable through the GUI.
-                command:
-                    DISABLEREASONS=$(find ~/Library/Application\ Support/Google/Chrome -name "Preferences" -maxdepth 2 | xargs -I{} python ./scripts/chrome_defaults.py read '{}' extensions.settings.cjpalhdlnbpafiamejdnhcphjbkeiagm.disable_reasons | grep -v "does not exist" | grep -v "not found") ; if [[ -n $DISABLEREASONS ]] ; then echo "False" ; exit ; fi ; BADSTATE=$(find ~/Library/Application\ Support/Google/Chrome -name "Preferences" -maxdepth 2 | grep -v "Guest Profile" | grep -v "System Profile" | xargs -I{} python ./scripts/chrome_defaults.py read '{}' extensions.settings.cjpalhdlnbpafiamejdnhcphjbkeiagm.state | grep -v "1") ; if [[ -n $BADSTATE ]] ; then echo "False" ; fi ; echo "True" ;
-                command_pass: "True"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            manual:
-                '''
-                1. For each of your Chrome profiles, visit https://chrome.google.com/webstore/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm in Google Chrome.
-                2. Select "Add to Chrome".
-                3. Complete any required follow-up steps as instructed on the screen.
-                '''
-        }
-    },
-    {
-        //chrome://extensions/->Ghostery
-        description: "All Google Chrome web browser profiles have enabled the Ghostery extension."
-        confidence: "recommended"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: chrome_is_installed
-                command_pass: 0
-                case_sensitive: false
-            },
-            {
-                type: "exact match"
-                //This style of bash command basically prints "False" and exits any time it detects a problem in any Chrome profile, since we're looking for 100% compliance. We'll create an exception for the default System and Guest profiles, since these are not configurable through the GUI.
-                command:
-                    DISABLEREASONS=$(find ~/Library/Application\ Support/Google/Chrome -name "Preferences" -maxdepth 2 | xargs -I{} python ./scripts/chrome_defaults.py read '{}' extensions.settings.mlomiejdfkolichcflejclcbmpeaniij.disable_reasons | grep -v "does not exist" | grep -v "not found") ; if [[ -n $DISABLEREASONS ]] ; then echo "False" ; exit ; fi ; BADSTATE=$(find ~/Library/Application\ Support/Google/Chrome -name "Preferences" -maxdepth 2 | grep -v "Guest Profile" | grep -v "System Profile" | xargs -I{} python ./scripts/chrome_defaults.py read '{}' extensions.settings.mlomiejdfkolichcflejclcbmpeaniij.state | grep -v "1") ; if [[ -n $BADSTATE ]] ; then echo "False" ; fi ; echo "True" ;
-                command_pass: "True"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            manual:
-                '''
-                1. For each of your Chrome profiles, visit https://chrome.google.com/webstore/detail/ghostery/mlomiejdfkolichcflejclcbmpeaniij in Google Chrome.
-                2. Select "Add to Chrome".
-                3. Complete any required follow-up steps as instructed on the screen.
-                '''
-        }
-    },
-    {
-        //chrome://extensions/->ScriptSafe
-        description: "All Google Chrome web browser profiles have enabled the ScriptSafe extension."
-        confidence: "experimental"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: chrome_is_installed
-                command_pass: 0
-                case_sensitive: false
-            },
-            {
-                type: "exact match"
-                //This style of bash command basically prints "False" and exits any time it detects a problem in any Chrome profile, since we're looking for 100% compliance. We'll create an exception for the default System and Guest profiles, since these are not configurable through the GUI.
-                command:
-                    DISABLEREASONS=$(find ~/Library/Application\ Support/Google/Chrome -name "Preferences" -maxdepth 2 | xargs -I{} python ./scripts/chrome_defaults.py read '{}' extensions.settings.oiigbmnaadbkfbmpbfijlflahbdbdgdf.disable_reasons | grep -v "does not exist" | grep -v "not found") ; if [[ -n $DISABLEREASONS ]] ; then echo "False" ; exit ; fi ; BADSTATE=$(find ~/Library/Application\ Support/Google/Chrome -name "Preferences" -maxdepth 2 | grep -v "Guest Profile" | grep -v "System Profile" | xargs -I{} python ./scripts/chrome_defaults.py read '{}' extensions.settings.oiigbmnaadbkfbmpbfijlflahbdbdgdf.state | grep -v "1") ; if [[ -n $BADSTATE ]] ; then echo "False" ; fi ; echo "True" ;
-                command_pass: "True"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            manual:
-                '''
-                1. For each of your Chrome profiles, visit https://chrome.google.com/webstore/detail/scriptsafe/oiigbmnaadbkfbmpbfijlflahbdbdgdf in Google Chrome.
-                2. Select "Add to Chrome".
-                3. Complete any required follow-up steps as instructed on the screen.
-                '''
         }
     },
     {
