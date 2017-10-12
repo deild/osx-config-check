@@ -1460,7 +1460,53 @@
         undo: defaults -currentHost write ~/Library/Preferences/com.apple.Safari ShowFullURLInSmartSearchField -bool false"
     },
     /* ----END SAFARI BROWSER SETTINGS---- */
-
+    /* ---BEGIN APPLE MAIL SETTINGS--- */
+    {
+        //Check if the Mail app is closed -- otherwise, it may override changes this app makes.
+        description: "The Mail application is currently closed."
+        confidence: required
+        reference: "https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/defaults.1.html"
+        tests:
+        [
+            {
+                type: "exact match"
+                command: "ps ax | grep -c '/Applications/Mail.app/Contents/MacOS/Mail'"
+                command_pass: 2 //a value of "3" means it's running -- the other 2 are `/bin/sh` and the `grep` command.
+                case_sensitive: false
+            }
+        ]
+        fix:
+        {
+            command:
+                killall "Mail" ; sleep 1
+        }
+    },
+    {
+        //Mail->Preferences->Junk Mail->Enable junk mail filtering AND When junk mail arrives: Move it to the Junk mailbox
+        description: "Mail identified by Apple Mail as junk is sent to the Junk mailbox."
+        confidence: recommended
+        tests:
+        [
+            {
+                //If Apple Mail is not in use by the user, this test passes
+                type: "exact match"
+                command: apple_mail_in_use
+                command_pass: 0
+                case_sensitive: false
+            }
+            {
+                type: "exact match"
+                command: "defaults -currentHost read ~/Library/Containers/com.apple.mail/Data/Library/Preferences/com.apple.mail JunkMailBehavior"
+                command_pass: 2
+                case_sensitive: false
+            }
+        ]
+        fix:
+        {
+            command: "defaults -currentHost write ~/Library/Containers/com.apple.mail/Data/Library/Preferences/com.apple.mail JunkMailBehavior -int 2"
+        }
+    },
+    /* ----END APPLE MAIL SETTINGS---- */
     /* ---BEGIN GOOGLE CHROME SETTINGS--- */
     {
         //Check if the Chrome app is closed -- otherwise, it may override changes this app makes.
