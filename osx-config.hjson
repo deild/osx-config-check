@@ -261,72 +261,6 @@
         }
     },
     {
-        //System Preferences->Security & Privacy->Firewall->Firewall Options...->Enable Stealth Mode
-        //Note: This seems to get overwritten logging out/in. See following, user-specific version.
-        description: "Stealth mode is enabled for OSX: Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (system-wide)"
-        confidence: "recommended"
-        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read /Library/Preferences/com.apple.alf stealthenabled"
-                command_pass: "1"
-                command_fail: "0"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true"
-            sudo_command: "sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true"
-        }
-        undo: "sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool false"
-    },
-    {
-        //System Preferences->Security & Privacy->Firewall->Firewall Options...->Enable Stealth Mode
-        description: "Stealth mode is enabled for OSX: Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (current user only)"
-        confidence: "recommended"
-        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read ~/Library/Preferences/com.apple.alf stealthenabled"
-                command_pass: "1"
-                command_fail: "0"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults write ~/Library/Preferences/com.apple.alf stealthenabled -bool true"
-            sudo_command: "sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true"
-        }
-        undo: "defaults write ~/Library/Preferences/com.apple.alf stealthenabled -bool false"
-    },
-    {
-        description: "Hidden files are displayed in Finder."
-        confidence: "recommended"
-        reference: "http://lifehacker.com/the-best-hidden-settings-you-can-unlock-with-os-xs-ter-1476627111"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "defaults -currentHost read /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles"
-                command_pass: "1"
-                command_fail: "0"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command: "defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles -bool true && killall Dock"
-            sudo_command: "sudo defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles -bool true && killall Dock"
-        }
-        undo: "defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.finder AppleShowAllFiles -bool false && killall Dock"
-    },
-    {
         description: "All application software is currently up to date."
         confidence: "required"
         reference: "https://github.com/SummitRoute/osxlockdown/"
@@ -634,28 +568,6 @@
             sudo_command: "sudo systemsetup -setwakeonnetworkaccess off"
         }
         undo: "sudo systemsetup -setwakeonnetworkaccess on"
-    },
-    {
-        //There are a number of attacks based on IPv6 use. For the sake of simplicity, it's best to disable it entirely unless it is required. See: https://www.ernw.de/download/ERNW_Hardening_IPv6_MacOS-X_v1_0.pdf
-        description: "IPv6 is disabled on all network interfaces."
-        confidence: "recommended"
-        reference: "https://github.com/SummitRoute/osxlockdown/blob/58697f5162fe9e43df7dc9b6b94ffa34b0e11d4f/commands.yaml"
-        tests:
-        [
-            {
-                type: "exact match"
-                command:
-                    networksetup -listallnetworkservices | while read i; do SUPPORT=$(networksetup -getinfo "$i" | grep "IPv6: Automatic") && if [ -n "$SUPPORT" ]; then echo 1; fi; done; echo 0; exit
-                command_pass: "0"
-                //command_fail would be one or more instances of the character "1"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            command:
-                networksetup -listallnetworkservices | while read i; do SUPPORT=$(networksetup -getinfo "$i" | grep "IPv6: Automatic") && if [ -n "$SUPPORT" ]; then networksetup -setv6off "$i"; fi; done;
-        }
     },
     {
         description: "An administrator password is required to change system-wide preferences."
@@ -1267,54 +1179,6 @@
         undo: defaults -currentHost write ~/Library/Preferences/com.apple.Safari ShowFullURLInSmartSearchField -bool false"
     },
     /* ----END SAFARI BROWSER SETTINGS---- */
-
-    /* ---BEGIN APPLE MAIL SETTINGS--- */
-    {
-        //Check if the Mail app is closed -- otherwise, it may override changes this app makes.
-        description: "The Mail application is currently closed."
-        confidence: required
-        reference: "https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/defaults.1.html"
-        tests:
-        [
-            {
-                type: "exact match"
-                command: "ps ax | grep -c '/Applications/Mail.app/Contents/MacOS/Mail'"
-                command_pass: 2 //a value of "3" means it's running -- the other 2 are `/bin/sh` and the `grep` command.
-                case_sensitive: false
-            }
-        ]
-        fix:
-        {
-            command:
-                killall "Mail" ; sleep 1
-        }
-    },
-    {
-        //Mail->Preferences->Junk Mail->Enable junk mail filtering AND When junk mail arrives: Move it to the Junk mailbox
-        description: "Mail identified by Apple Mail as junk is sent to the Junk mailbox."
-        confidence: recommended
-        tests:
-        [
-            {
-                //If Apple Mail is not in use by the user, this test passes
-                type: "exact match"
-                command: apple_mail_in_use
-                command_pass: 0
-                case_sensitive: false
-            }
-            {
-                type: "exact match"
-                command: "defaults -currentHost read ~/Library/Containers/com.apple.mail/Data/Library/Preferences/com.apple.mail JunkMailBehavior"
-                command_pass: 2
-                case_sensitive: false
-            }
-        ]
-        fix:
-        {
-            command: "defaults -currentHost write ~/Library/Containers/com.apple.mail/Data/Library/Preferences/com.apple.mail JunkMailBehavior -int 2"
-        }
-    },
-    /* ----END APPLE MAIL SETTINGS---- */
 
     /* ---BEGIN GOOGLE CHROME SETTINGS--- */
     {
