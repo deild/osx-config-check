@@ -1478,6 +1478,138 @@
     }
   },
   {
+    "description": "GPGMail is in use.",
+    "confidence": "recommended",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "gpg_mail_in_use",
+        "command_pass": 1,
+        "command_fail": 0,
+        "case_sensitive": false
+      }
+    ],
+    "fix": {
+      "manual": "1. Visit https://gpgtools.org/ and install GPG Suite. This tool can be used to encrypted and sign emails sent to other PGP users."
+    }
+  },
+  {
+    "description": "New e-mails composed in Apple Mail are encrypted by GPGMail if the receiver's PGP is present in the keychain.",
+    "confidence": "recommended",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "apple_mail_in_use",
+        "command_pass": 0,
+        "case_sensitive": false
+      },
+      {
+        "type": "exact match",
+        "command": "gpg_mail_in_use",
+        "command_pass": 0,
+        "case_sensitive": false
+      },
+      {
+        "type": "exact match",
+        "command": "defaults read ~/Library/Preferences/org.gpgtools.gpgmail EncryptNewEmailsByDefault",
+        "command_pass": 1,
+        "command_fail": 0,
+        "case_sensitive": false
+      }
+    ],
+    "fix": {
+      "command": "defaults write ~/Library/Preferences/org.gpgtools.gpgmail.plist EncryptNewEmailsByDefault -bool true"
+    },
+    "undo": "defaults write ~/Library/Preferences/org.gpgtools.gpgmail.plist EncryptNewEmailsByDefault -bool false"
+  },
+  {
+    "description": "New e-mails composed in Apple Mail and saved as drafts are encrypted by GPGMail.",
+    "confidence": "required",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "apple_mail_in_use",
+        "command_pass": 0,
+        "case_sensitive": false
+      },
+      {
+        "type": "exact match",
+        "command": "gpg_mail_in_use",
+        "command_pass": 0,
+        "case_sensitive": false
+      },
+      {
+        "type": "exact match",
+        "command": "defaults read ~/Library/Preferences/org.gpgtools.gpgmail OptionallyEncryptDrafts",
+        "command_pass": 1,
+        "command_fail": 0,
+        "case_sensitive": false
+      }
+    ],
+    "fix": {
+      "command": "defaults write ~/Library/Preferences/org.gpgtools.gpgmail.plist OptionallyEncryptDrafts -bool true"
+    },
+    "undo": "defaults write ~/Library/Preferences/org.gpgtools.gpgmail.plist OptionallyEncryptDrafts -bool false"
+  },
+  {
+    "description": "New e-mails composed in Apple Mail are signed by GPGMail.",
+    "confidence": "required",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "apple_mail_in_use",
+        "command_pass": 0,
+        "case_sensitive": false
+      },
+      {
+        "type": "exact match",
+        "command": "gpg_mail_in_use",
+        "command_pass": 0,
+        "case_sensitive": false
+      },
+      {
+        "type": "exact match",
+        "command": "defaults read ~/Library/Preferences/org.gpgtools.gpgmail SignNewEmailsByDefault",
+        "command_pass": 1,
+        "command_fail": 0,
+        "case_sensitive": false
+      }
+    ],
+    "fix": {
+      "command": "defaults write ~/Library/Preferences/org.gpgtools.gpgmail.plist SignNewEmailsByDefault -bool true"
+    },
+    "undo": "defaults write ~/Library/Preferences/org.gpgtools.gpgmail.plist SignNewEmailsByDefault -bool false"
+  },
+  {
+    "description": "Apple Mail automatically checks for updates to GPGMail.",
+    "confidence": "required",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "apple_mail_in_use",
+        "command_pass": 0,
+        "case_sensitive": false
+      },
+      {
+        "type": "exact match",
+        "command": "gpg_mail_in_use",
+        "command_pass": 0,
+        "case_sensitive": false
+      },
+      {
+        "type": "exact match",
+        "command": "defaults read ~/Library/Preferences/org.gpgtools.gpgmail SUEnableAutomaticChecks",
+        "command_pass": 1,
+        "command_fail": 0,
+        "case_sensitive": false
+      }
+    ],
+    "fix": {
+      "command": "defaults write ~/Library/Preferences/org.gpgtools.gpgmail.plist SUEnableAutomaticChecks -bool true"
+    },
+    "undo": "defaults write ~/Library/Preferences/org.gpgtools.gpgmail.plist SUEnableAutomaticChecks -bool false"
+  },
+  {
     "description": "The Google Chrome browser is currently closed.",
     "confidence": "required",
     "tests": [
