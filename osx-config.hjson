@@ -153,6 +153,31 @@
     },
     /* --- BEGIN SYSTEM SETTINGS --- */
     {
+        description: "Current user is a non-admin account."
+        confidence: "required"
+        tests:
+        [
+            {
+                type: "exact match"
+                command: "id -Gn | grep -c -w admin"
+                command_pass: "0"
+                case_sensitive: "false"
+            }
+        ]
+        fix:
+        {
+            manual:
+                '''
+                1. For most of your work, you should be logged into a non-administrator account. If you've already set this up and you're just logged into your admin account in order to run this tool as prescribed, you can ignore this failed test.
+                2. To create a new, non-admin user for most of your work: Open System Preferences.
+                3. Select "Users & Groups".
+                4. If necessary, click the lock icon in the lower left corner and provide your administrator credentials.
+                5. Click the "+" to create a new user. Make sure the "Allow user to administer this computer" checkbox is un-checked for that user.
+                6. You may also want to add your non-administrator user to a list of users who can use the "sudo" command within the Terminal application to briefly gain administrator-like credentials for special circumstances. See: http://osxdaily.com/2014/02/06/add-user-sudoers-file-mac/
+                '''
+        }
+    },
+    {
         //Check if the System Preferences app is closed -- otherwise, it may override changes this app makes.
         description: "The System Preferences application is currently closed."
         confidence: "required"
