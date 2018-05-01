@@ -1434,6 +1434,29 @@
     }
   },
   {
+    "description": "Apple Mail does not automatically load remote content in e-mails.",
+    "confidence": "recommended",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "apple_mail_in_use",
+        "command_pass": 0,
+        "case_sensitive": false
+      },
+      {
+        "type": "exact match",
+        "command": "defaults read ~/Library/Preferences/com.apple.mail-shared DisableURLLoading",
+        "command_pass": 1,
+        "command_fail": 0,
+        "case_sensitive": false
+      }
+    ],
+    "fix": {
+      "command": "defaults write ~/Library/Preferences/com.apple.mail-shared DisableURLLoading -bool true"
+    },
+    "undo": "defaults write ~/Library/Preferences/com.apple.mail-shared DisableURLLoading -bool false"
+  },
+  {
     "description": "Mail identified by Apple Mail as junk is sent to the Junk mailbox.",
     "confidence": "recommended",
     "tests": [
