@@ -4,7 +4,7 @@
 
 # set working directory to the one containing this script so it can find other
 # scripts.
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit
 
 OPENSSL_LATEST_PATH=$(find /usr/local/Cellar/libressl -name "bin" -maxdepth 2 -type d | sort -nr | head -n 1)
 
