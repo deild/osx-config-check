@@ -679,8 +679,7 @@ def print_usage():
           "tool.\n"
           "\t--report-only        Only reports on compliance and does not "
           "offer to fix broken configurations.\n"
-          "\t--disable-logs       Refrain from creating a log file with the "
-          "results.\n"
+          "\t--enable-logs        creating a log file with the results.\n"
           "\t--disable-prompt     Refrain from prompting user before applying "
           "fixes.\n"
           "\t--skip-sudo-checks   Do not perform checks that require sudo "
@@ -762,8 +761,8 @@ def get_sys_args():
             args['debug-print'] = True
         elif flag == '--report-only':
             args['report-only'] = True
-        elif flag == '--disable-logs':
-            args['write-to-log-file'] = False
+        elif flag == '--enable-logs':
+            args['write-to-log-file'] = True
         elif flag == '--disable-prompt':
             args['no-prompt'] = True
         elif flag == '--skip-sudo-checks':
