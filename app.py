@@ -751,7 +751,7 @@ def get_sys_args():
     """
     args = {'debug-print': False,
             'report-only': False,
-            'write-to-log-file': True,
+            'write-to-log-file': False,
             'no-prompt': False,
             'skip-sudo-checks': False}
     unprocessed_args = sys.argv[1:]
