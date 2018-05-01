@@ -410,21 +410,21 @@
         undo: "sudo defaults -currentHost write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool true"
     },
     {
-        description: "OpenSSL is up to date."
+        description: "LibreSSL is up to date."
         confidence: "required"
-        reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
+        reference: "https://www.cursivesecurity.com/blog/2017/libressl-replacement-openssl/"
         tests:
         [
             {
                 type: "exact match"
                 command: "openssl version"
-                command_pass: "OpenSSL 1.0.2o  27 Mar 2018"
+                command_pass: "LibreSSL 2.7.2"
                 case_sensitive: "false"
             }
         ]
         fix:
         {
-            command: "brew update ; brew install openssl ; brew upgrade openssl ; bash ./scripts/set_openssl_latest_path.sh"
+            command: "brew update ; brew install libressl ; brew upgrade libressl ; bash ./scripts/set_libressl_latest_path.sh"
             manual:
                 '''
                 1. Bring the Terminal application to the foreground if it is not already. You should see the word "Terminal" in the top left corner of your screen.
