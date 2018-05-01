@@ -996,6 +996,28 @@
         undo: "defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool true"
     },
     {
+        description: "The File Vault key is protected when going to standby mode."
+        //Once this set of configurations is proven stable, this can be upgraded from "experimental" to "recommended". We may want to warn the user first that waking will be slower and require authenticating twice.
+        confidence: "experimental"
+        reference: "https://www.sunnyhoi.com/guide-to-encrypting-securing-mac-os-x-with-filevault-2/"
+        tests:
+        [
+            {
+                type: "exact match"
+                command: "bash ./scripts/DestroyFVKeyOnStandby_check.sh"
+                command_pass: "1"
+                command_fail: "0"
+                case_sensitive: "false"
+            }
+        ]
+        fix:
+        {
+            //Additional configurations are required to make this setting not fight with powernap/standby/autopoweroff. See: https://github.com/drduh/OS-X-Security-and-Privacy-Guide/issues/124
+            command: "pmset -a destroyfvkeyonstandby 1 ; pmset -a hibernatemode 25 ; pmset -a powernap 0 ; pmset -a standby 0 ; pmset -a standbydelay 0; pmset -a autopoweroff 0"
+            sudo_command: "sudo pmset -a destroyfvkeyonstandby 1 ; sudo pmset -a hibernatemode 25 ; sudo pmset -a powernap 0 ; sudo pmset -a standby 0 ; sudo pmset -a standbydelay 0; sudo pmset -a autopoweroff 0"
+        }
+    },
+    {
         description: "The system will store a copy of memory to persistent storage, and will remove power to memory."
         confidence: "recommended"
         reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
