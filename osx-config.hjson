@@ -991,20 +991,20 @@
         undo: "sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.apsd.plist"
     },
     {
-        description: "Google DNS servers are used by default on all network interfaces."
+        description: "OpenDNS Home servers are used by default on all network interfaces."
         confidence: "recommended"
         tests:
         [
             {
                 type: "regex match"
-                command: "networksetup listallnetworkservices | grep -v 'An asterisk' | xargs -I{} networksetup -getdnsservers '{}' "
-                command_pass: "^(8\\.8\\.8\\.8\\n8\\.8\\.4\\.4\n*)+$"
+                command: "networksetup listallnetworkservices | grep -v 'An asterisk' | grep -v 'iPhone' | xargs -I{} networksetup -getdnsservers '{}' "
+                command_pass: "^(208\\.67\\.222\\.222\\n208\\.67\\.220\\.220\n*)+$"
                 case_sensitive: "false"
             }
         ]
         fix:
         {
-            sudo_command: sudo bash ./scripts/use_google_dns.sh
+            sudo_command: sudo bash ./scripts/use_opendns_home_dns.sh
         }
     },
     {
