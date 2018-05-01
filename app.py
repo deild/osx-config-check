@@ -645,7 +645,7 @@ def write_str(msg, debug=False):
 def dprint(msg):
     """Print debug statements."""
     if const.ENABLE_DEBUG_PRINT:
-        print "DEBUG: %s" % msg
+        print("DEBUG: %s" % msg)
 
 def is_match(regex, string, ignore_case=False):
     """Check if regex matches string."""
@@ -771,7 +771,7 @@ def get_sys_args():
         elif flag == '-h' or flag == '--help':
             print_usage()
         else:
-            print "ERROR: Unrecognized option '%s'" % flag
+            print("ERROR: Unrecognized option '%s'" % flag)
             print_usage()
 
     return args
