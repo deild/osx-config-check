@@ -1003,6 +1003,38 @@
     }
   },
   {
+    "description": "Safari will not auto-fill your contact data.",
+    "confidence": "recommended",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "defaults -currentHost read ~/Library/Preferences/com.apple.Safari AutoFillFromAddressBook",
+        "command_pass": "0",
+        "command_fail": "1",
+        "case_sensitive": "false"
+      }
+    ],
+    "fix": {
+      "command": "defaults -currentHost write ~/Library/Preferences/com.apple.Safari AutoFillFromAddressBook -bool false"
+    }
+  },
+  {
+    "description": "Safari will not auto-fill miscellaneous forms.",
+    "confidence": "recommended",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "defaults -currentHost read ~/Library/Preferences/com.apple.Safari AutoFillMiscellaneousForms",
+        "command_pass": "0",
+        "command_fail": "1",
+        "case_sensitive": "false"
+      }
+    ],
+    "fix": {
+      "command": "defaults -currentHost write ~/Library/Preferences/com.apple.Safari AutoFillMiscellaneousForms -bool false"
+    }
+  },
+  {
     "description": "Safari will not auto-fill usernames or passwords.",
     "confidence": "recommended",
     "tests": [
@@ -1035,6 +1067,38 @@
     }
   },
   {
+    "description": "Cookies and local storage are always blocked in Safari.",
+    "confidence": "recommended",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "defaults -currentHost read ~/Library/Preferences/com.apple.Safari BlockStoragePolicy",
+        "command_pass": "0",
+        "command_fail": "1",
+        "case_sensitive": "false"
+      }
+    ],
+    "fix": {
+      "command": "defaults -currentHost write ~/Library/Preferences/com.apple.Safari BlockStoragePolicy -bool false"
+    }
+  },
+  {
+    "description": "Safari extensions are disabled.",
+    "confidence": "required",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "defaults -currentHost read ~/Library/Preferences/com.apple.Safari ExtensionsEnabled",
+        "command_pass": "0",
+        "command_fail": "1",
+        "case_sensitive": "false"
+      }
+    ],
+    "fix": {
+      "command": "defaults -currentHost write ~/Library/Preferences/com.apple.Safari ExtensionsEnabled -bool false"
+    }
+  },
+  {
     "description": "The Safari web browser will warn when visiting known fraudulent websites.",
     "confidence": "recommended",
     "tests": [
@@ -1050,6 +1114,40 @@
       "command": "defaults -currentHost write ~/Library/Preferences/com.apple.Safari WarnAboutFraudulentWebsites -bool true"
     },
     "undo": "defaults -currentHost write ~/Library/Preferences/com.apple.Safari WarnAboutFraudulentWebsites -bool false"
+  },
+  {
+    "description": "JavaScript is disabled in the Safari web browser.",
+    "confidence": "recommended",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "defaults -currentHost read ~/Library/Preferences/com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptEnabled",
+        "command_pass": "0",
+        "command_fail": "1",
+        "case_sensitive": "false"
+      }
+    ],
+    "fix": {
+      "command": "defaults -currentHost write ~/Library/Preferences/com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptEnabled -bool false"
+    },
+    "undo": "defaults -currentHost write ~/Library/Preferences/com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptEnabled -bool true"
+  },
+  {
+    "description": "JavaScript is disabled in the Safari web browser (Legacy version).",
+    "confidence": "recommended",
+    "tests": [
+      {
+        "type": "exact match",
+        "command": "defaults -currentHost read ~/Library/Preferences/com.apple.Safari WebKitJavaScriptEnabled",
+        "command_pass": "0",
+        "command_fail": "1",
+        "case_sensitive": "false"
+      }
+    ],
+    "fix": {
+      "command": "defaults -currentHost write ~/Library/Preferences/com.apple.Safari WebKitJavaScriptEnabled -bool false"
+    },
+    "undo": "defaults -currentHost write ~/Library/Preferences/com.apple.Safari WebKitJavaScriptEnabled -bool true"
   },
   {
     "description": "Pop-up windows are blocked in the Safari web browser.",
