@@ -134,10 +134,10 @@
             }
             {
                 //Past test if the latest version available via `brew cask install java` is installed
-                type: "exact match"
-                command: java -version 2>&1 >/dev/null | grep 'java version'
-                command_pass:
-                    java version "1.8.0_151"
+                type: "regex match"
+                command: ./scripts/semver.sh compare "$(java -version 2>&1 | awk -F '"' '{print $2}')" "1.8.0_151"
+                command_pass: "0|1"
+                command_fail: "-1"
                 case_sensitive: false
             }
         ]
@@ -500,10 +500,11 @@
         tests:
         [
             {
-                type: "exact match"
-                command: "openssl version"
-                command_pass: "LibreSSL 2.7.2"
-                case_sensitive: "false"
+                type: regex match
+                command: ./scripts/semver.sh compare "$(openssl version 2>&1 | awk '{print $2}')" "2.7.2"
+                command_pass: 0|1
+                command_fail: -1
+                case_sensitive: false
             }
         ]
         fix:
@@ -1043,9 +1044,10 @@
         [
             {
                 type: "regex match"
-                command: "git --version"
-                command_pass: ".*(command not found|2\\.17\\.0).*"
-                case_sensitive: "false"
+                command: ./scripts/semver.sh compare "$(git --version 2>&1 | awk '{print $3}')" "2.17.0"
+                command_pass: "0|1"
+                command_fail: "-1"
+                case_sensitive: false
             }
         ]
         fix:
@@ -1120,9 +1122,10 @@
         [
             {
                 type: "regex match"
-                command: "curl --version"
-                command_pass: ".*(command not found|7\\.59\\.0).*"
-                case_sensitive: "false"
+                command: ./scripts/semver.sh compare "$(curl --version 2>&1 | grep 'curl' | awk '{print $2}')" "7.59.0"
+                command_pass: "0|1"
+                command_fail: "-1"
+                case_sensitive: false
             }
         ]
         fix:
@@ -2686,31 +2689,6 @@
                 '''
         }
     },
-    /*{
-        description: "Google Chrome is the default web browser."
-        confidence: "recommended"
-        tests:
-        [
-            {
-                type: "exact match"
-                command:
-                    VERSIONER_PERL_PREFER_32_BIT=true perl -MMac::InternetConfig -le 'print +(GetICHelper "http")[1]'
-                command_pass: "Google Chrome"
-                case_sensitive: "false"
-            }
-        ]
-        fix:
-        {
-            manual:
-                '''
-                1. Install Google Chrome if not already installed.
-                2. Open System Preferences.
-                3. Select "General".
-                4. Under "Default web browser", select "Google Chrome".
-                '''
-        }
-    }*/
-
     /* ----END GOOGLE CHROME SETTINGS---- */
     /* ---BEGIN FIREFOX BROWSER SETTINGS--- */
     {
