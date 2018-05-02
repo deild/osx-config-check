@@ -65,7 +65,7 @@ function apple_mail_in_use {
     #I use "ls" here to resolve the "~" symbol to the fully qualified file path
     #that "test" requires.
     IN_USE=$(ls ~/Library/Preferences/com.apple.mail-shared.plist)
-    if [ -e $IN_USE ]; then
+    if [ -e "$IN_USE" ]; then
         echo 1
     else
         echo 0
@@ -76,7 +76,7 @@ function gpg_mail_in_use {
     #I use "ls" here to resolve the "~" symbol to the fully qualified file path
     #that "test" requires.
     IN_USE=$(ls ~/Library/Preferences/org.gpgtools.gpgmail.plist)
-    if [ -e $IN_USE ]; then
+    if [ -e "$IN_USE" ]; then
         echo 1
     else
         echo 0
@@ -95,8 +95,8 @@ function is_el_capitan {
 
 function does_defaults_domain_exist {
     DOMAIN=$1
-    READ_VAL=$(defaults read $DOMAIN 2>&1 | tail -n 1 )
-    if [[ $READ_VAL =~ "Domain $DOMAIN does not exist" ]]; then
+    READ_VAL=$(defaults read "$DOMAIN" 2>&1 | tail -n 1 )
+    if [[ $READ_VAL = Domain\ $DOMAIN\ does\ not\ exist ]]; then
         echo 0
     else
         echo 1
@@ -115,16 +115,16 @@ function defaults_write_ignore_missing {
     DATA_TYPE=$3
     VAL=$4
 
-    DOMAIN_EXISTS=$(does_defaults_domain_exist $DOMAIN)
+    DOMAIN_EXISTS=$(does_defaults_domain_exist "$DOMAIN")
     if [ "$DOMAIN_EXISTS" = "0" ]; then
-        defaults write $DOMAIN '{"osxconfig-reserved" = 1;}'
-        DOMAIN_EXISTS=$(does_defaults_domain_exist $DOMAIN)
+        defaults write "$DOMAIN" '{"osxconfig-reserved" = 1;}'
+        DOMAIN_EXISTS=$(does_defaults_domain_exist "$DOMAIN")
         if [ "$DOMAIN_EXISTS" = "0" ]; then
             echo "Could not successfully create the specified domain."
             exit
         fi
     fi
-    defaults write $DOMAIN $KEY $DATA_TYPE $VAL
+    defaults write "$DOMAIN" "$KEY" "$DATA_TYPE" "$VAL"
 }
 
 function is_sudoer {

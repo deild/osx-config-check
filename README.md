@@ -1,6 +1,6 @@
 # osx-config-check
 
-Checks your OSX machine against various hardened configuration settings.
+Checks your macOS machine against various hardened configuration settings.
 
 You can specify your own preferred configuration baseline by supplying your own [Hjson](https://hjson.org/) file instead of the provided one.
 
@@ -41,7 +41,7 @@ Usage: python app.py [OPTIONS]
 OPTIONS:
 	--debug-print        Enables verbose output for debugging the tool.
 	--report-only        Only reports on compliance and does not offer to fix broken configurations.
-	--disable-logs       Refrain from creating a log file with the results.
+	--enable-logs        Creating a log file with the results.
 	--disable-prompt     Refrain from prompting user before applying fixes.
 	--skip-sudo-checks   Do not perform checks that require sudo privileges.
 	--help -h            Print this usage information.

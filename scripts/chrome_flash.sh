@@ -8,7 +8,7 @@
 
 # set working directory to the one containing this script so it can find other
 # scripts.
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit
 
 FILE=$1
 
@@ -28,7 +28,7 @@ function plugins_list_value {
 
 function is_list_missing {
     echo DEBUG: python chrome_defaults.py read "$FILE" plugins.plugins_list
-    MISSING=$(python chrome_defaults.py read "$FILE" plugins.plugins_list | grep -c "The attribute 'plugins\.plugins_list' does not exist")
+    MISSING=$(python chrome_defaults.py read "$FILE" plugins.plugins_list | grep -c "The attribute 'plugins\\.plugins_list' does not exist")
     echo "$MISSING"
 }
 

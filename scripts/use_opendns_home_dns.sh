@@ -7,7 +7,7 @@ function non_opendns_home_dns {
     if [ "$INTERFACE" = "An asterisk (*) denotes that a network service is disabled." ]; then
         echo 0
     else
-        DNS=$(networksetup -getdnsservers "$INTERFACE" | tr -d "\n")
+        DNS=$(networksetup -getdnsservers "$INTERFACE" | tr -d "\\n")
         if [ "$DNS" != "208.67.222.222208.67.220.220" ]; then
             echo 1
         else

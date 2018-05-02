@@ -10,7 +10,7 @@ STORED_DNS=''
 
 function store_dns {
     #echo "DEBUG: entered store_dns"
-    STORED_DNS=$(networksetup -getdnsservers Wi-Fi | tr -s "\n" " ")
+    STORED_DNS=$(networksetup -getdnsservers Wi-Fi | tr -s "\\n" " ")
     if [ "$STORED_DNS" = "There aren't any DNS Servers set on Wi-Fi. " ]; then
         echo "Oops! You already had DNS settings set to automatic. You're having some other kind of problem connecting to wi-fi. Try opening your browser and surfing to 'http://example' to bring up an active-portal login page."
         exit
@@ -36,7 +36,7 @@ function set_automatic_dns {
 function restore_dns {
     #echo "DEBUG: Entered restore_dns"
     echo "Enter your OSX login password if prompted: "
-    sudo networksetup -setdnsservers Wi-Fi $STORED_DNS
+    sudo networksetup -setdnsservers Wi-Fi "$STORED_DNS"
     echo "DNS settings restored."
 }
 
