@@ -200,7 +200,7 @@
     {
         //System Preferences->Security & Privacy->Firewall->Turn On Firewall
         //Note: This seems to get overwritten logging out/in. See following, user-specific version.
-        description: "The OSX application firewall is enabled (system-wide)."
+        description: "The macOS application firewall is enabled (system-wide)."
         confidence: "required"
         reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
         tests:
@@ -228,7 +228,7 @@
     },
     {
         //System Preferences->Security & Privacy->Firewall->Turn On Firewall
-        description: "The OSX application firewall is enabled (current user only)."
+        description: "The macOS application firewall is enabled (current user only)."
         confidence: "required"
         reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
         tests:
@@ -387,7 +387,7 @@
     {
         //System Preferences->Security & Privacy->Firewall->Firewall Options...->Enable Stealth Mode
         //Note: This seems to get overwritten logging out/in. See following, user-specific version.
-        description: "Stealth mode is enabled for OSX: Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (system-wide)"
+        description: "Stealth mode is enabled for macOS: Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (system-wide)"
         confidence: "recommended"
         reference: "https://github.com/drduh/OS-X-Security-and-Privacy-Guide"
         tests:
@@ -1216,7 +1216,7 @@
         tests:
         [
             {
-                //SIP is not available for OS X before 10.11
+                //SIP is not available for macOS before 10.11
                 //TODO: not sure about 10.12
                 type: "exact match"
                 command: is_el_capitan
@@ -2719,7 +2719,7 @@
     /* --- BEGIN COMMON MALWARE DETECTION --- */
 
     {
-        description: "OSX/Keydnap malware is not present."
+        description: "macOS/Keydnap malware is not present."
         confidence: "required"
         reference: "http://www.welivesecurity.com/2016/08/30/osxkeydnap-spreads-via-signed-transmission-application/"
         tests:
@@ -2779,7 +2779,7 @@
         {
             manual:
                 '''
-                1. One or more of the files associated with the OSX/Keydnap malware was found. Please report this to the authors of osx-config-check via GitHub (https://github.com/kristovatlas/osx-config-check) or Twitter (https://twitter.com/kristovatlas).
+                1. One or more of the files associated with the macOS/Keydnap malware was found. Please report this to the authors of osx-config-check via GitHub (https://github.com/kristovatlas/osx-config-check) or Twitter (https://twitter.com/kristovatlas).
                 2. Refer to this link: http://www.welivesecurity.com/2016/08/30/osxkeydnap-spreads-via-signed-transmission-application/
                 '''
         }

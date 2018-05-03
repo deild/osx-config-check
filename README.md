@@ -15,7 +15,7 @@ Configurations come from sites like:
 
 ## Usage
 
-**You should download and run this application once for each OS X user account you have on your machine.** Each user may be configured differently, and so each should be audited.
+**You should download and run this application once for each macOS user account you have on your machine.** Each user may be configured differently, and so each should be audited.
 
 Download this app using Git, GitHub Desktop, or the "download as zip" option offered by GitHub. If you choose the zip option, unarchive the zip file after.
 
@@ -68,9 +68,9 @@ CHECK #4: The System Preferences application is currently closed.... PASSED!
 
 CHECK #5: Current user is a non-admin account.... FAILED!
 
-CHECK #6: The OSX application firewall is enabled (system-wide).... PASSED!
+CHECK #6: The macOS application firewall is enabled (system-wide).... PASSED!
 
-CHECK #7: The OSX application firewall is enabled (current user only).... PASSED!
+CHECK #7: The macOS application firewall is enabled (current user only).... PASSED!
 
 CHECK #8: A password is required to wake the computer from sleep or screen saver (system-wide).... PASSED!
 
@@ -84,9 +84,9 @@ CHECK #12: Logging is enabled for the operating system.... PASSED!
 
 CHECK #13: Homebrew analytics are disabled.... PASSED!
 
-CHECK #14: Stealth mode is enabled for OSX: Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (system-wide)... PASSED!
+CHECK #14: Stealth mode is enabled for macOS: Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (system-wide)... PASSED!
 
-CHECK #15: Stealth mode is enabled for OSX: Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (current user only)... PASSED!
+CHECK #15: Stealth mode is enabled for macOS: Computer does not respond to ICMP ping requests or connection attempts from a closed TCP/UDP port. (current user only)... PASSED!
 
 CHECK #16: Automatic whitelisting of Apple-signed applications through the firewall is disabled (system-wide).... PASSED!
 
@@ -301,7 +301,7 @@ This tool encourages users to use DNS servers run by the Google corporation. Thi
 
 And follow the instructions on the screen carefully.
 
-### Something in OS X broke!
+### Something in macOS broke!
 
 A few users have observed that features like screen saver activation with hot corners stopped working after applying configuration fixes. These problems have so far been remedied simply by restarting the system.
 

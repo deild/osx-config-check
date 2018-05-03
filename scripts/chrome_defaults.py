@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Reads and writes Google Chome preferences in OS X.
+"""Reads and writes Google Chome preferences in macOS.
 
-Based on the `defaults` utility for reading/writing PList files in OS X.
+Based on the `defaults` utility for reading/writing PList files in macOS.
 
 The sub-commands currently supported are
 * read

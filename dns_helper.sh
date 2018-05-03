@@ -21,7 +21,7 @@ function store_dns {
 function set_automatic_dns {
     #echo "DEBUG: entered set_automatic_dns."
     store_dns
-    echo "Enter your OSX login password if prompted: "
+    echo "Enter your macOS login password if prompted: "
     sudo networksetup -setdnsservers Wi-Fi "empty"
     
     NEW_VAL=$(networksetup -getdnsservers Wi-Fi)
@@ -35,7 +35,7 @@ function set_automatic_dns {
 
 function restore_dns {
     #echo "DEBUG: Entered restore_dns"
-    echo "Enter your OSX login password if prompted: "
+    echo "Enter your macOS login password if prompted: "
     sudo networksetup -setdnsservers Wi-Fi "$STORED_DNS"
     echo "DNS settings restored."
 }

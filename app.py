@@ -263,7 +263,7 @@ def run_check(config_check, last_attempt=False, quiet_fail=False):
                     "sudo", const.SUDO_STR, test['command'])
                 write_str(("The next configuration check requires elevated "
                            "privileges; %syou may be prompted for your current "
-                           "OS X user's password  below%s. The command to be "
+                           "macOS user's password  below%s. The command to be "
                            "executed is: '%s'") %
                           (const.COLORS['BOLD'], const.COLORS['ENDC'],
                            fancy_sudo_command))
@@ -432,7 +432,7 @@ def _try_fix(config_check, use_sudo=False):
     command = config_check.sudo_fix if use_sudo else config_check.fix
     if use_sudo:
         write_str(("\tAttempting configuration fix with elevated privileges; %s"
-                   "you may be prompted for your OS X login password%s...") %
+                   "you may be prompted for your macOS login password%s...") %
                   (const.COLORS['BOLD'], const.COLORS['ENDC']))
     stdoutdata = ""
     stderrdata = ""
