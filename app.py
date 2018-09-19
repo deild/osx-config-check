@@ -20,7 +20,7 @@ const.FIX_RECOMMENDED_BY_DEFAULT = True #TODO: command line flag
 const.FIX_EXPERIMENTAL_BY_DEFAULT = False #TODO: command line flag
 const.LOG_DEBUG_ALWAYS = True #TODO: command line flag
 
-const.VERSION = "v1.2.0 (charmeleon)"
+const.VERSION = "v2.0.0"
 
 const.API_FILENAME = './scripts/api.sh'
 
@@ -660,11 +660,10 @@ def _print_banner():
                "---------------------------\n"
                "%s%sosx-config-check%s %s\n"
                "Download the latest copy of this tool at: "
-               "https://github.com/kristovatlas/osx-config-check \n"
+               "https://github.com/deild/osx-config-check \n"
                "Report bugs/issues:\n"
                "\t* GitHub: "
-               "https://github.com/kristovatlas/osx-config-check/issues \n"
-               "\t* Twitter: https://twitter.com/kristovatlas \n"
+               "https://github.com/deild/osx-config-check/issues \n"
                "---------------------------------------------------------------"
                "---------------------------\n") %
               (const.COLORS['BOLD'], const.COLORS['OKBLUE'],
@@ -673,7 +672,8 @@ def _print_banner():
 
 def print_usage():
     """Prints usage for this command-line tool and exits."""
-    print("Usage: python app.py [OPTIONS]\n"
+    print("osx-config-check %s\n"
+          "Usage: python app.py [OPTIONS]\n"
           "OPTIONS:\n"
           "\t--debug-print        Enables verbose output for debugging the "
           "tool.\n"
@@ -684,7 +684,7 @@ def print_usage():
           "fixes.\n"
           "\t--skip-sudo-checks   Do not perform checks that require sudo "
           "privileges.\n"
-          "\t--help -h            Print this usage information.\n")
+          "\t--help -h            Print this usage information.\n" % const.VERSION)
     sys.exit()
 
 def print_tallies():
