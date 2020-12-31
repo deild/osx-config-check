@@ -1,3 +1,5 @@
+# :warning: This project is not maintained anymore :exclamation:
+
 # osx-config-check
 
 Checks your macOS machine against various hardened configuration settings.
